@@ -1,7 +1,9 @@
 package com.studymate.web;
 
-import java.util.Optional;
+import javax.servlet.http.HttpSession;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +20,7 @@ import com.studymate.domain.UserRepository;
 @RequestMapping("/users")
 public class UserController {
 	
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	@Autowired
 	private UserRepository userRepository;
@@ -32,7 +35,25 @@ public class UserController {
 	public String signIn() {
 		return "/user/login";
 	}
-
+	
+	@PostMapping("/login")
+	public String signInAction(String userId, String password, HttpSession session) {
+		User user = userRepository.findByUserId(userId);
+		if(user==null) {
+			logger.error("Login Fail");
+			return "redirect:/users/signIn";
+		}
+		if(!password.equals(user.getPassword())) {
+			logger.error("Login Fail");
+			return "redirect:/users/signIn";
+		}
+		
+		logger.info("Login Success");
+		session.setAttribute("user", user);
+		
+		return "redirect:/";
+	}
+	
 	@PostMapping("")
 	public String create(User user) {
 		userRepository.save(user);

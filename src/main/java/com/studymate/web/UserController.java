@@ -49,15 +49,17 @@ public class UserController {
 		}
 		
 		logger.info("Login Success");
-		session.setAttribute("user", user);
+		session.setAttribute("sessionUser", user);
 		
 		return "redirect:/";
 	}
 	
 	@GetMapping("/logout")
 	public String logout(HttpSession session) {
-		session.removeAttribute("user");
-		return "redirect:/";
+		if(session.getAttribute("sessionUser")!=null) {
+			session.removeAttribute("sessionUser");
+		}
+		return "redirect:/";	
 	}
 	
 	@PostMapping("")
@@ -72,16 +74,27 @@ public class UserController {
 		return "/user/list";
 	}
 	
-	@GetMapping("/{id}/form")
-	public String updateform(@PathVariable Long id, Model model) {
-		User user = userRepository.findById(id).orElse(null);
+	@GetMapping("/profile")
+	public String profile(Model model, HttpSession session) {
+		Object tempUser = session.getAttribute("sessionUser");
+		if(tempUser==null) {
+			return "/users/signIn";
+		}
+		User sessionUser = (User)tempUser;
+		User user = userRepository.findById(sessionUser.getId()).orElse(null);
+		
 		model.addAttribute("user", user);
 		return "/user/updateForm";
 	}
 	
-	@PostMapping("/update")
-	public String update(@RequestParam(value="id") Long id, User updateUser) {
-		User user = userRepository.findById(id).orElse(null);
+	@PostMapping("/profile/update")
+	public String update(User updateUser, HttpSession session) {
+		Object tempUser = session.getAttribute("sessionUser");
+		if(tempUser==null) {
+			return "/users/signIn";
+		}
+		User sessionUser = (User)tempUser;
+		User user = userRepository.findById(sessionUser.getId()).orElse(null);
 		user.update(updateUser);
 		userRepository.save(user);
 		return "redirect:/users";

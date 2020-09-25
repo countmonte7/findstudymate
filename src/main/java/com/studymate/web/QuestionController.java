@@ -5,9 +5,11 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.studymate.domain.Question;
@@ -38,12 +40,36 @@ public class QuestionController {
 		return "redirect:/";
 	}
 	
-	@GetMapping("/detail/{id}")
+	@GetMapping("/{id}")
 	public String quesitonDetail(@PathVariable Long id, Model model) {
 		Question question = quesitonRepository.findById(id).orElse(null);
 		if(question==null) return "redirect:/";
 		model.addAttribute("question", question);
 		return "/qna/show";
+	}
+	
+	@GetMapping("/{id}/form")
+	public String questionUpdateForm(@PathVariable Long id, Model model) {
+		Question question = quesitonRepository.findById(id).orElse(null);
+		if(question==null) return "redirect:/questions/{id}";
+		model.addAttribute("question", question);
+		return "/qna/updateForm";
+	}
+	
+	@PutMapping("/{id}")
+	public String updateQuestion(@PathVariable Long id, String title, String contents) {
+		Question question = quesitonRepository.findById(id).orElse(null);
+		if(question==null) return "redirect:/";
+		question.update(title, contents);
+		quesitonRepository.save(question);
+		return String.format("redirect:/questions/%d", id);
+	}
+	
+	@DeleteMapping("/{id}")
+	public String delete(@PathVariable Long id) {
+		Question question = quesitonRepository.findById(id).orElse(null);
+		quesitonRepository.delete(question);
+		return "redirect:/";
 	}
 	
 }

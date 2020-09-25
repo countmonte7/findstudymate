@@ -43,13 +43,13 @@ public class UserController {
 			logger.error("Login Fail");
 			return "redirect:/users/signIn";
 		}
-		if(!password.equals(user.getPassword())) {
+		if(!user.matchPassword(password)) {
 			logger.error("Login Fail");
 			return "redirect:/users/signIn";
 		}
 		
 		logger.info("Login Success");
-		session.setAttribute("sessionUser", user);
+		session.setAttribute(HttpSessionUtils.USER_SESSION_KEY, user);
 		
 		return "redirect:/";
 	}
@@ -57,7 +57,7 @@ public class UserController {
 	@GetMapping("/logout")
 	public String logout(HttpSession session) {
 		if(session.getAttribute("sessionUser")!=null) {
-			session.removeAttribute("sessionUser");
+			session.removeAttribute(HttpSessionUtils.USER_SESSION_KEY);
 		}
 		return "redirect:/";	
 	}
@@ -76,11 +76,10 @@ public class UserController {
 	
 	@GetMapping("/profile")
 	public String profile(Model model, HttpSession session) {
-		Object tempUser = session.getAttribute("sessionUser");
-		if(tempUser==null) {
+		if(!HttpSessionUtils.isLoginUser(session)) {
 			return "/users/signIn";
 		}
-		User sessionUser = (User)tempUser;
+		User sessionUser = HttpSessionUtils.getUserFromSession(session);
 		User user = userRepository.findById(sessionUser.getId()).orElse(null);
 		
 		model.addAttribute("user", user);
@@ -89,11 +88,10 @@ public class UserController {
 	
 	@PostMapping("/profile/update")
 	public String update(User updateUser, HttpSession session) {
-		Object tempUser = session.getAttribute("sessionUser");
-		if(tempUser==null) {
+		if(!HttpSessionUtils.isLoginUser(session)) {
 			return "/users/signIn";
 		}
-		User sessionUser = (User)tempUser;
+		User sessionUser = HttpSessionUtils.getUserFromSession(session);
 		User user = userRepository.findById(sessionUser.getId()).orElse(null);
 		user.update(updateUser);
 		userRepository.save(user);

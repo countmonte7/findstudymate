@@ -11,10 +11,6 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Getter
-@Setter
-@ToString
-@NoArgsConstructor
 public class Question {
 
 	@Id
@@ -23,6 +19,9 @@ public class Question {
 
 	private String writer;
 	
+	public Question() {
+		super();
+	}
 
 	public Question(String writer, String title, String contents) {
 		super();

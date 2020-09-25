@@ -11,7 +11,13 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+
 @Entity
+@NoArgsConstructor
 public class Question {
 
 	@Id
@@ -21,15 +27,12 @@ public class Question {
 	@ManyToOne
 	@JoinColumn(foreignKey = @ForeignKey(name="fk_question_writer"))
 	private User writer;
-	
-	public Question() {
-		super();
-	}
 
+	@NonNull
 	private String title;
-
+	@NonNull
 	private String contents;
-	
+	@NonNull
 	private LocalDateTime createDate;
 	
 	public Question(User writer, String title, String contents) {
@@ -50,4 +53,9 @@ public class Question {
 		if(title!="" && title != null) this.title = title;
 		if(contents!="" && contents != null) this.contents = contents;
 	}
+
+	public boolean isSameWriter(User sessionUser) {
+		return this.writer.equals(sessionUser);
+	}
+	
 }

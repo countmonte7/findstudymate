@@ -6,6 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -17,6 +18,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @Getter
 @Entity
+@EqualsAndHashCode
 public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,22 +47,6 @@ public class User {
 		return inputPassword.equals(password);
 	}
 	
-	public Long getId() {
-		return id;
-	}
-	
-	public String getUserId() {
-		return userId;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
 	public void update(User updateUser) {
 		if (updateUser.getPassword() != null && updateUser.getPassword() != "")
 			this.password = updateUser.getPassword();

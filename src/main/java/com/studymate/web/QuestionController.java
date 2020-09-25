@@ -4,7 +4,9 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -29,11 +31,19 @@ public class QuestionController {
 	public String create(String title, String contents, HttpSession session) {
 		if(!HttpSessionUtils.isLoginUser(session)) return "/users/signIn";
 		
-		User user = HttpSessionUtils.getUserFromSession(session);
+		User sessionUser = HttpSessionUtils.getUserFromSession(session);
 	
-		Question question = new Question(user.getUserId(), title, contents);
+		Question question = new Question(sessionUser, title, contents);
 		quesitonRepository.save(question);
 		return "redirect:/";
+	}
+	
+	@GetMapping("/detail/{id}")
+	public String quesitonDetail(@PathVariable Long id, Model model) {
+		Question question = quesitonRepository.findById(id).orElse(null);
+		if(question==null) return "redirect:/";
+		model.addAttribute("question", question);
+		return "/qna/show";
 	}
 	
 }

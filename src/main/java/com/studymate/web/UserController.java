@@ -81,7 +81,6 @@ public class UserController {
 		}
 		User sessionUser = HttpSessionUtils.getUserFromSession(session);
 		User user = userRepository.findById(sessionUser.getId()).orElse(null);
-		
 		model.addAttribute("user", user);
 		return "/user/updateForm";
 	}

@@ -3,6 +3,7 @@ package com.studymate.web;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,19 +38,22 @@ public class ApiAnswerController {
 		Question question = questionRepository.findById(questionId).orElse(null);
 
 		Answer answer = new Answer(question, writer, contents);
-
-		return answerRepository.save(answer);
-
+		question.addAnswer();
+		return answerRepository.save(answer);	
 	}
 	
 	@DeleteMapping("/{id}")
-	public Result delete(@PathVariable Long questionId, @PathVariable Long id, HttpSession session) {
+	public Result delete(@PathVariable Long questionId, @PathVariable Long id, 
+		HttpSession session, Model model) {
 		if(!HttpSessionUtils.isLoginUser(session)) return Result.fail("로그인 해야합니다.");
 		
 		User loginUser = HttpSessionUtils.getUserFromSession(session);
 		Answer answer = answerRepository.findById(id).orElse(null);
 		if(!answer.isSameWriter(loginUser)) return Result.fail("본인의 글만 삭제할 수 있어요.");
 		answerRepository.delete(answer);
+		Question question = questionRepository.findById(questionId).orElse(null);
+		question.deleteAnswer();
+		questionRepository.save(question);
 		return Result.ok();
 	}
 	

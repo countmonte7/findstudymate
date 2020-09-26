@@ -16,6 +16,7 @@ import javax.persistence.OrderBy;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
@@ -38,6 +39,10 @@ public class Question {
 	@NonNull
 	@JsonProperty
 	private String contents;
+	
+	@JsonProperty
+	private Integer countOfAnswer = 0;
+	
 	@NonNull
 	private LocalDateTime createDate;
 	
@@ -66,6 +71,14 @@ public class Question {
 
 	public boolean isSameWriter(User sessionUser) {
 		return this.writer.equals(sessionUser);
+	}
+
+	public void addAnswer() {
+		this.countOfAnswer += 1;
+	}
+	
+	public void deleteAnswer() {
+		this.countOfAnswer -= 1;
 	}
 	
 }

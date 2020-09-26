@@ -1,4 +1,4 @@
-$(".answer-write input[type=submit]").click(addAnswer);
+$(document).on('click', '.answer-write input[type=submit]', addAnswer);
 
 function addAnswer(e) {
 	e.preventDefault();
@@ -16,20 +16,22 @@ function addAnswer(e) {
 		data: queryString,
 		dataType: 'json',
 		error: onError,
-		success: onSuccess
+		success: function(data, status) {
+			console.log("통과");
+			var answerTemplate = $("#answerTemplate").html();
+			var template = answerTemplate.format(data.writer.userId, data.formattedCreateDate, data.contents,
+				data.question.id, data.id);
+			$(".qna-comment-slipp-articles").prepend(template);
+			$(".comment-count").text(data.question.countOfAnswer);
+			$(".answer-write textarea").val("");
+		}
 	});
 	
-	function onError() {
-	}
-	
-	function onSuccess(data, status) {
-		var answerTemplate = $("#answerTemplate").html();
-		var template = answerTemplate.format(data.writer.userId, data.formattedCreateDate, data.contents,
-			data.question.id, data.id);
-		$(".qna-comment-slipp-articles").prepend(template);
-		
-		$(".answer-write textarea").val("");
-	}
+	function onError(jqXHR, data) {
+    	console.log(jqXHR.status);
+    	console.log(data);
+   }
+
 }
 	$(document).on('click', '.link-delete-article', deleteAnswer);
 
@@ -38,6 +40,7 @@ function addAnswer(e) {
 		e.preventDefault();
 		var deletBtn = $(this);
 		var url = deletBtn.attr("href");
+		
 		
 		$.ajax({
 			type: 'delete',
@@ -50,6 +53,7 @@ function addAnswer(e) {
 				console.log(data);
 				if(data.valid) {
 					deletBtn.closest("article").remove();
+					$(".comment-count").text();
 				}else {
 					alert(data.errorMessage);
 				}

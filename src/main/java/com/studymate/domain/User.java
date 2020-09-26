@@ -6,6 +6,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,14 +24,21 @@ import lombok.ToString;
 public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@JsonProperty
 	private Long id;
 
 	@Column(nullable = false, length = 20, unique = true)
+	@JsonProperty
 	private String userId;
+	
 	@NonNull
 	private String password;
+	
+	@JsonProperty
 	@NonNull
 	private String name;
+	
+	@JsonProperty
 	@NonNull
 	private String email;
 

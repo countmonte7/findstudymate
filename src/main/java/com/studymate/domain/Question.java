@@ -14,6 +14,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
@@ -23,6 +25,7 @@ public class Question {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@JsonProperty
 	private Long id;
 
 	@ManyToOne
@@ -30,14 +33,16 @@ public class Question {
 	private User writer;
 
 	@NonNull
+	@JsonProperty
 	private String title;
 	@NonNull
+	@JsonProperty
 	private String contents;
 	@NonNull
 	private LocalDateTime createDate;
 	
 	@OneToMany(mappedBy="question")
-	@OrderBy("id ASC")
+	@OrderBy("id DESC")
 	private List<Answer> answers;
 	
 	public Question(User writer, String title, String contents) {

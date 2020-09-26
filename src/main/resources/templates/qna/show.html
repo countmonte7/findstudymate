@@ -6,6 +6,9 @@
 <body>
 {{>include/navigation}}
 <div class="container" id="main">
+	{{#errorMessage}}
+		<div class="alert alert-danger" role="alert">{{this}}</div> 
+	{{/errorMessage}}
     <div class="col-md-12 col-sm-12 col-lg-12">
     	{{#question}}
         <div class="panel panel-default">
@@ -127,8 +130,6 @@
 		</div>
 	</article>
 </script>
-
-<!-- script references -->
 {{> include/footer}}
 	</body>
 </html>

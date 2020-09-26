@@ -55,8 +55,8 @@ public class Question {
 	}
 
 	public void update(String title, String contents) {
-		if(title!="" && title != null) this.title = title;
-		if(contents!="" && contents != null) this.contents = contents;
+		this.title = title;
+		this.contents = contents;
 	}
 
 	public boolean isSameWriter(User sessionUser) {

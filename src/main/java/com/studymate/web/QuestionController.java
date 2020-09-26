@@ -15,6 +15,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.studymate.domain.Question;
 import com.studymate.domain.QuestionRepository;
+import com.studymate.domain.Result;
 import com.studymate.domain.User;
 
 @Controller
@@ -56,74 +57,72 @@ public class QuestionController {
 	public String questionUpdateForm(@PathVariable Long id, Model model, HttpSession session,
 			RedirectAttributes rdAttributes) {
 		Question question = quesitonRepository.findById(id).orElse(null);
-		try {
-			hasPermission(session, question);
-			model.addAttribute("question", question);
-			return "/qna/updateForm";
-		} catch (IllegalStateException e) {
-			String errorMessage = e.getMessage();
+		Result result = valid(session, question);
+		if(!result.isValid()) {
+			String errorMessage = result.getErrorMessage();
 			rdAttributes.addFlashAttribute("errorMessage", errorMessage);
-			if (errorMessage.contains("글쓴이")) {
+			if (errorMessage.contains("본인")) {
 				return String.format("redirect:/questions/%d", id);
 			}
 			return "redirect:/users/signIn";
 		}
+		model.addAttribute("question", question);
+		return "/qna/updateForm";
 	}
-
-	private boolean hasPermission(HttpSession session, Question question) {
-		if (!HttpSessionUtils.isLoginUser(session))
-			throw new IllegalStateException("로그인이 필요합니다.");
-
+	
+	//로그인, 계정 일치 여부 validation
+	private Result valid(HttpSession session, Question question) {
+		if(!HttpSessionUtils.isLoginUser(session)) return Result.fail("로그인이 필요합니다");
 		User loginUser = HttpSessionUtils.getUserFromSession(session);
-		if (!question.isSameWriter(loginUser))
-			throw new IllegalStateException("해당 글쓴이가 아닙니다.");
-		return true;
+		if(!question.isSameWriter(loginUser)) return Result.fail("본인의 글만 수정/삭제 가능합니다.");
+		return Result.ok();
 	}
 
-	private boolean inputDataValdationCheck(String title, String contents) {
-		if (title == "" || title == null || contents == "" || contents == null)
-			throw new IllegalStateException("내용을 입력하세요.");
-		return true;
+	//내용 입력 여부 validation
+	private Result inputDataValdationCheck(String title, String contents) {
+		if (title == "" || title == null || contents == "" || contents == null) return Result.fail("내용을 입력하세요.");
+		return Result.ok();
 	}
 
 	@PutMapping("/{id}")
 	public String updateQuestion(@PathVariable Long id, String title, String contents, HttpSession session,
-			Model model, RedirectAttributes rdAttributes) {
+			RedirectAttributes rdAttributes) {
 		Question question = quesitonRepository.findById(id).orElse(null);
-		try {
-			hasPermission(session, question);
-			inputDataValdationCheck(title, contents);
-			question.update(title, contents);
-			quesitonRepository.save(question);
-			return String.format("redirect:/questions/%d", id);
-		} catch (IllegalStateException e) {
-			String errorMessage = e.getMessage();
+		Result result = valid(session, question);
+		if(!result.isValid()) {
+			String errorMessage = result.getErrorMessage();
 			rdAttributes.addFlashAttribute("errorMessage", errorMessage);
-			if (errorMessage.contains("글쓴이")) {
+			if(errorMessage.contains("본인")) {
 				return String.format("redirect:/questions/%d", id);
-			} else if (errorMessage.contains("내용")) {
-				return String.format("redirect:/questions/%d/form", id);
 			}
+			
 			return "redirect:/users/signIn";
 		}
+		Result inputDataValidResult = inputDataValdationCheck(title, contents);
+		if(!inputDataValidResult.isValid()) {
+			String errorMessage = inputDataValidResult.getErrorMessage();
+			rdAttributes.addFlashAttribute("errorMessage",errorMessage);
+			return String.format("redirect:/questions/%d", id);
+		}
+		question.update(title, contents);
+		quesitonRepository.save(question);
+		return String.format("redirect:/questions/%d", id);
+		
 	}
 
 	@DeleteMapping("/{id}")
 	public String delete(@PathVariable Long id, HttpSession session, Model model,
 			RedirectAttributes rdAttributes) {
 		Question question = quesitonRepository.findById(id).orElse(null);
-		try {
-			hasPermission(session, question);
-			quesitonRepository.delete(question);
-			return "redirect:/";
-		}catch(IllegalStateException e) {
-			String errorMessage = e.getMessage();
+		Result result = valid(session, question);
+		if(!result.isValid()) {
+			String errorMessage = result.getErrorMessage();
 			rdAttributes.addFlashAttribute("errorMessage", errorMessage);
-			if (errorMessage.contains("글쓴이")) {
-				return String.format("redirect:/questions/%d", id);
-			}
+			if(errorMessage.contains("본인")) return String.format("redirect:/questions/%d", id);
 			return "redirect:/users/signIn";
 		}
+		quesitonRepository.delete(question);
+		return "redirect:/";
 	}
 
 }

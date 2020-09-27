@@ -5,6 +5,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +27,15 @@ public class ApiAnswerController {
 
 	@Autowired
 	private QuestionRepository questionRepository;
+	
+	
+	@GetMapping("/{id}")
+	public Answer showAnswer(@PathVariable Long id) {
+		Answer answer = answerRepository.findById(id).orElse(null);
+		
+		return answer;
+	}
+	
 
 	@PostMapping("")
 	public Answer createAnswer(@PathVariable Long questionId, String contents, HttpSession session) {
@@ -55,6 +65,19 @@ public class ApiAnswerController {
 		question.deleteAnswer();
 		questionRepository.save(question);
 		return Result.ok();
+	}
+	
+	
+	@GetMapping("/{id}/updateForm")
+	public Answer update(@PathVariable Long id, HttpSession session) {
+		if(!HttpSessionUtils.isLoginUser(session)) return null;
+		User loginUser = HttpSessionUtils.getUserFromSession(session);
+		Answer answer = answerRepository.findById(id).orElse(null);
+		if(!answer.isSameWriter(loginUser)) {
+			return null;
+		}
+		return answer;
+		
 	}
 	
 }

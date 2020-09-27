@@ -29,8 +29,8 @@ function addAnswer(e) {
 	
 	function onError(jqXHR, data) {
     	console.log(jqXHR.status);
-    	console.log(data);
    }
+   
 
 }
 	$(document).on('click', '.link-delete-article', deleteAnswer);
@@ -60,13 +60,73 @@ function addAnswer(e) {
 			}
 		});
 	}
+
+	var tempAnswerData = null;
+	var check = 0;
+
+	$(document).on('click','.link-answer-modify-article', updateAnswer)
+	
+	function updateAnswer(e) {
+		e.preventDefault();
+		var updateBtn = $(this);
+		var url = updateBtn.attr("href");
+		console.log(url);
+
+		$.ajax({
+			type: 'get',
+			url: url,
+			dataType: 'json',
+			error: function (xhr, status) {
+				console.log(status);
+			},
+			success: function (data, status) {
+				if(check==1) {
+					cancelUpdateAnswer();
+					check=0;
+				}
+				var answerId = data.id;
+				var content = data.contents;
+				var questionId = data.question.id;
+				var a = '';
+				a += '<div class="input-group"  style="width: 100%">';
+				a += '<textarea class="form-control answerUpdateForm" name="content_"'+answerId+'>';
+				a += content;
+				a += '</textarea>';
+				a += '<ul class="article-util-list">';
+				a += '<li class="update-confirm-list"><a href="/api/questions/'+questionId+'/answers/'+answerId+'/update">확인</a></li>'
+				a += '<li><a href="">취소</a></li></ul>'
+				a += '</div>';
+				$('.qna-comment-slipp-articles .article'+answerId).children('.article-main').html(a);
+				check = 1;
+			}
+		});
+
+		function cancelUpdateAnswer() {
+			var content = $(".qna-comment-slipp-articles .input-group .answerUpdateForm").val();
+			var questionId = $(".update-confirm-list a").attr("href").split("/")[3];
+			var answerId = $(".update-confirm-list a").attr("href").split("/")[5];
+		
+					var original = '';
+					original += '<div class="article-main" id="answer-main">'
+					original +=	'<div class="article-doc comment-doc">'+content+'</div>'
+					original += '<div class="article-util">'
+					original += '<ul class="article-util-list">'
+					original += '<li><a class="link-answer-modify-article" href="/api/questions/'+questionId+'/answers/'+answerId+'/updateForm">수정</a></li>'
+					original +=	'<li><a class="link-delete-article href="/api/questions/{3}/answers/{4}">삭제</a></li>"'
+					original += '</ul></div>'
+					$('.input-group').html(original);
+				
+		}
+	
+	}
+
 	
 	String.prototype.format = function() {
-  	var args = arguments;
-  	return this.replace(/{(\d+)}/g, function(match, number) {
-    	return typeof args[number] != 'undefined'
-        	? args[number]
-        	: match
-        	;
-  	});
-};
+		var args = arguments;
+		return this.replace(/{(\d+)}/g, function(match, number) {
+		  return typeof args[number] != 'undefined'
+			  ? args[number]
+			  : match
+			  ;
+		});
+	};

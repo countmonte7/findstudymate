@@ -1,0 +1,30 @@
+
+<script type="text/template" id="answerTemplate">
+    <article class="article{4}">
+        <div class="article-header">
+            <div class="article-header-thumb">
+                <img src="https://graph.facebook.com/v2.3/1324855987/picture" class="article-author-thumb" alt="">
+            </div>
+            <div class="article-header-text">
+                <a href="#" class="article-author-name">{0}</a>
+                <div class="article-header-time">{1}</div>
+            </div>
+        </div>
+        <div class="article-main" id="answer-main">
+            <div class="article-doc comment-doc">
+                {2}
+            </div>
+            <div class="article-util">
+            <ul class="article-util-list">
+                <li>
+                    <a class="link-answer-modify-article" href="/api/questions/{3}/answers/{4}/updateForm">수정</a>
+                </li>
+                <li>
+                    <li><a class="link-delete-article"
+                        href="/api/questions/{3}/answers/{4}">삭제</a></li>
+                </li>
+            </ul>
+        </div>
+        </div>
+    </article>
+</script>

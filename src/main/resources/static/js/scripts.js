@@ -73,13 +73,15 @@ function addAnswer(e) {
 				console.log(status);
 			},
 			success: function (data, status) {
-				if(check==1) {
-					cancelUpdateAnswer();
-					check=0;
-				}
 				var answerId = data.id;
 				var content = data.contents;
 				var questionId = data.question.id;
+				if(check==1) {
+					cancelUpdateAnswer();
+				}
+				if(check==0) {
+					tempAnswerData = data;
+				}
 				var a = '';
 				a += '<div class="input-group"  style="width: 100%">';
 				a += '<textarea class="form-control answerUpdateForm" id="editContent">';
@@ -100,9 +102,11 @@ function addAnswer(e) {
 			if(check==0) {
 				return false;
 			}
+			
 			var content = $(".qna-comment-slipp-articles .input-group .answerUpdateForm").val();
-			var questionId = $(".update-confirm-list a").attr("href").split("/")[3];
-			var answerId = $(".update-confirm-list a").attr("href").split("/")[5];
+			var questionId = tempAnswerData.question.id;
+			var answerId = tempAnswerData.id;
+			console.log("questionId : "+questionId+" answerId : "+answerId);
 		
 					var original = '';
 					original += '<div class="article-main" id="answer-main">'
@@ -134,7 +138,8 @@ function addAnswer(e) {
 					alert(status);
 				},
 				success: function(data, status) {
-					console.log($(this).parent());
+					$('#answer-create-time').val(data.formattedCreateDate);
+
 				}
 			}); 
 		}

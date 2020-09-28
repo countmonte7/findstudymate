@@ -65,4 +65,9 @@ public class Answer {
 	public boolean isSameWriter(User loginUser) {
 		return loginUser.equals(this.writer);
 	}
+
+	public void update(String contents) {
+		this.createDate = LocalDateTime.now();
+		this.contents = contents;
+	}
 }

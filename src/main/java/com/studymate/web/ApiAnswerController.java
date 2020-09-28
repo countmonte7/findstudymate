@@ -77,7 +77,16 @@ public class ApiAnswerController {
 			return null;
 		}
 		return answer;
-		
+	}
+	
+	@PostMapping("/{id}/update")
+	public Answer updateAction(@PathVariable Long id, HttpSession session, String contents) {
+		if(!HttpSessionUtils.isLoginUser(session)) return null;
+		User loginUser = HttpSessionUtils.getUserFromSession(session);
+		Answer answer = answerRepository.findById(id).orElse(null);
+		if(!answer.isSameWriter(loginUser)) return null;
+		answer.update(contents);
+		return answerRepository.save(answer);
 	}
 	
 }

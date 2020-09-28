@@ -1,5 +1,8 @@
 package com.studymate.web;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,23 +51,35 @@ public class ApiAnswerController {
 		Question question = questionRepository.findById(questionId).orElse(null);
 
 		Answer answer = new Answer(question, writer, contents);
-		question.addAnswer();
+		question.addAnswerCount();
 		return answerRepository.save(answer);	
 	}
 	
 	@DeleteMapping("/{id}")
-	public Result delete(@PathVariable Long questionId, @PathVariable Long id, 
+	public List<Object> delete(@PathVariable Long questionId, @PathVariable Long id, 
 		HttpSession session, Model model) {
-		if(!HttpSessionUtils.isLoginUser(session)) return Result.fail("로그인 해야합니다.");
+		
+		List<Object> resultObj = new ArrayList<>();
+		
+		if(!HttpSessionUtils.isLoginUser(session)) {
+			resultObj.add(Result.fail("로그인 해야합니다."));
+			return resultObj;
+		}
 		
 		User loginUser = HttpSessionUtils.getUserFromSession(session);
 		Answer answer = answerRepository.findById(id).orElse(null);
-		if(!answer.isSameWriter(loginUser)) return Result.fail("본인의 글만 삭제할 수 있어요.");
+		if(!answer.isSameWriter(loginUser)) {
+			resultObj.add(Result.fail("본인의 글만 삭제할 수 있어요."));
+			return resultObj;
+		}
 		answerRepository.delete(answer);
 		Question question = questionRepository.findById(questionId).orElse(null);
-		question.deleteAnswer();
+		question.deleteAnswerCount();
 		questionRepository.save(question);
-		return Result.ok();
+		
+		resultObj.add(Result.ok());
+		resultObj.add(question);
+		return resultObj;
 	}
 	
 	

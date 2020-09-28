@@ -45,6 +45,7 @@ public class Answer {
 	@JsonProperty
 	private String contents;
 	
+	@JsonProperty
 	private LocalDateTime createDate;
 	
 	

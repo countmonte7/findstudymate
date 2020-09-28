@@ -73,11 +73,11 @@ public class Question {
 		return this.writer.equals(sessionUser);
 	}
 
-	public void addAnswer() {
+	public void addAnswerCount() {
 		this.countOfAnswer += 1;
 	}
 	
-	public void deleteAnswer() {
+	public void deleteAnswerCount() {
 		this.countOfAnswer -= 1;
 	}
 	

@@ -24,17 +24,14 @@ function addAnswer(e) {
 	function onError(jqXHR, data) {
     	console.log(jqXHR.status);
    }
-   
-
 }
-	$(document).on('click', '.link-delete-article', deleteAnswer);
+$(document).on('click', '.link-delete-article', deleteAnswer);
 
 	
 	function deleteAnswer(e) {
 		e.preventDefault();
 		var deletBtn = $(this);
 		var url = deletBtn.attr("href");
-		
 		
 		$.ajax({
 			type: 'delete',
@@ -44,15 +41,15 @@ function addAnswer(e) {
 				console.log("error");
 			},
 			success: function(data, status) {
-				if(data.valid) {
-					deletBtn.closest("article").remove();
-					$(".comment-count").text();
+				if(data[0].valid) {
+					$("#answer-group").remove();
+					$(".comment-count").text(data[1].countOfAnswer);
 				}else {
-					alert(data.errorMessage);
+					alert(data[0].errorMessage);
 				}
 			}
 		});
-	}
+	}	
 
 	var tempAnswerData = null;
 	var check = 0;
@@ -115,7 +112,7 @@ function addAnswer(e) {
 					original += '<div class="article-util">'
 					original += '<ul class="article-util-list">'
 					original += '<li><a class="link-answer-modify-article" href="/api/questions/'+questionId+'/answers/'+answerId+'/updateForm">수정</a></li>'
-					original +=	'<li><a class="link-delete-article href="/api/questions/{3}/answers/{4}">삭제</a></li>"'
+					original +=	'<li><a class="link-delete-article" href="/api/questions/'+questionId+'/answers/'+answerId+'">삭제</a></li>"'
 					original += '</ul></div>'
 					$('.qna-comment-slipp-articles .article'+answerId+' .input-group').html(original);
 			check=0;	
@@ -127,7 +124,7 @@ function addAnswer(e) {
 		function updateAnswerAction(e) {
 			e.preventDefault();
 			var updatActionBtn = $(this);
-			var url = updatActionBtn.attr("href");
+			url = updatActionBtn.attr("href");
 
 			var contents = $('#editContent').val();
 			$.ajax({
@@ -146,7 +143,7 @@ function addAnswer(e) {
 					updatedAnswerUrl += '<div class="article-util">'
 					updatedAnswerUrl += '<ul class="article-util-list">'
 					updatedAnswerUrl += '<li><a class="link-answer-modify-article" href="/api/questions/'+data.question.id+'/answers/'+data.id+'/updateForm">수정</a></li>'
-					updatedAnswerUrl +=	'<li><a class="link-delete-article href="/api/questions/{3}/answers/{4}">삭제</a></li>'
+					updatedAnswerUrl +=	'<li><a class="link-delete-article" href="/api/questions/'+data.question.id+'/answers/'+data.id+'">삭제</a></li>'
 					updatedAnswerUrl += '</ul></div>'
 
 					$('.qna-comment-slipp-articles .article'+data.id+' .input-group').html(updatedAnswerUrl);

@@ -114,7 +114,7 @@ function addAnswer(e) {
 					original += '<li><a class="link-answer-modify-article" href="/api/questions/'+questionId+'/answers/'+answerId+'/updateForm">수정</a></li>'
 					original +=	'<li><a class="link-delete-article href="/api/questions/{3}/answers/{4}">삭제</a></li>"'
 					original += '</ul></div>'
-					$('.input-group').html(original);
+					$('.qna-comment-slipp-articles .article'+answerId+' .input-group').html(original);
 				
 		}
 	

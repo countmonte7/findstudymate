@@ -98,6 +98,7 @@ function addAnswer(e) {
 
 		$(document).on('click', '#cancelUpdateForm', cancelUpdateAnswer);
 
+		//댓글 업데이트 취소 시
 		function cancelUpdateAnswer() {
 			if(check==0) {
 				return false;
@@ -122,11 +123,11 @@ function addAnswer(e) {
 
 		$(document).on('click','#updateAction', updateAnswerAction);
 		
+		//댓글 업데이트 반영
 		function updateAnswerAction(e) {
 			e.preventDefault();
 			var updatActionBtn = $(this);
 			var url = updatActionBtn.attr("href");
-			var answerId = url.split("/")[5];
 
 			var contents = $('#editContent').val();
 			$.ajax({
@@ -138,8 +139,17 @@ function addAnswer(e) {
 					alert(status);
 				},
 				success: function(data, status) {
-					$('#answer-create-time').val(data.formattedCreateDate);
+					$('#answer-create-time').text(data.formattedCreateDate);
+					var updatedAnswerUrl = '';
+					updatedAnswerUrl += '<div class="article-main" id="answer-main">'
+					updatedAnswerUrl +=	'<div class="article-doc comment-doc">'+data.contents+'</div>'
+					updatedAnswerUrl += '<div class="article-util">'
+					updatedAnswerUrl += '<ul class="article-util-list">'
+					updatedAnswerUrl += '<li><a class="link-answer-modify-article" href="/api/questions/'+data.question.id+'/answers/'+data.id+'/updateForm">수정</a></li>'
+					updatedAnswerUrl +=	'<li><a class="link-delete-article href="/api/questions/{3}/answers/{4}">삭제</a></li>'
+					updatedAnswerUrl += '</ul></div>'
 
+					$('.qna-comment-slipp-articles .article'+data.id+' .input-group').html(updatedAnswerUrl);
 				}
 			}); 
 		}

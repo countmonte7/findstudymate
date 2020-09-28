@@ -32,6 +32,7 @@ $(document).on('click', '.link-delete-article', deleteAnswer);
 		e.preventDefault();
 		var deletBtn = $(this);
 		var url = deletBtn.attr("href");
+		var answerId=url.split("/")[5];
 		
 		$.ajax({
 			type: 'delete',
@@ -42,7 +43,7 @@ $(document).on('click', '.link-delete-article', deleteAnswer);
 			},
 			success: function(data, status) {
 				if(data[0].valid) {
-					$("#answer-group").remove();
+					$(".article"+answerId).remove();
 					$(".comment-count").text(data[1].countOfAnswer);
 				}else {
 					alert(data[0].errorMessage);

@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,10 +23,14 @@ import com.studymate.domain.QuestionRepository;
 import com.studymate.domain.Result;
 import com.studymate.domain.User;
 
+
 @RestController
 @RequestMapping("/api/questions/{questionId}/answers")
 public class ApiAnswerController {
-
+	
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	
+	
 	@Autowired
 	private AnswerRepository answerRepository;
 
@@ -65,9 +71,9 @@ public class ApiAnswerController {
 			resultObj.add(Result.fail("로그인 해야합니다."));
 			return resultObj;
 		}
-		
 		User loginUser = HttpSessionUtils.getUserFromSession(session);
 		Answer answer = answerRepository.findById(id).orElse(null);
+		logger.warn("id : " + id);;
 		if(!answer.isSameWriter(loginUser)) {
 			resultObj.add(Result.fail("본인의 글만 삭제할 수 있어요."));
 			return resultObj;

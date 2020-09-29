@@ -58,6 +58,8 @@ public class ApiAnswerController {
 		
 		Answer answer = new Answer(question, writer, contents);
 		
+		logger.info("==========answerId : " + id);
+		
 		if(id!=null) {
 			Answer parentAnswer = answerRepository.findById(id).orElse(null);
 			answer.addAnswerDepth(parentAnswer.getRedepthNo());
@@ -129,5 +131,7 @@ public class ApiAnswerController {
 		}
 		return answerRepository.findById(id).orElse(null);
 	}
+	
+	
 	
 }

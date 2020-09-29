@@ -1,3 +1,7 @@
+var isUpdateFormOpen = false;
+var isReanswerFormOpen = false;
+
+
 $(document).on('click', '.answer-write input[type=submit]', addAnswer);
 
 function addAnswer(e) {
@@ -53,12 +57,13 @@ $(document).on('click', '.link-delete-article', deleteAnswer);
 	}	
 
 	var tempAnswerData = null;
-	var check = 0;
+	
 
 	$(document).on('click','.link-answer-modify-article', updateAnswer)
 	
 	function updateAnswer(e) {
 		e.preventDefault();
+		cancelReAnswer();
 		var updateBtn = $(this);
 		var url = updateBtn.attr("href");
 		console.log(url);
@@ -74,10 +79,10 @@ $(document).on('click', '.link-delete-article', deleteAnswer);
 				var answerId = data.id;
 				var content = data.contents;
 				var questionId = data.question.id;
-				if(check==1) {
+				if(isUpdateFormOpen) {
 					cancelUpdateAnswer();
 				}
-				if(check==0) {
+				if(!isUpdateFormOpen) {
 					tempAnswerData = data;
 				}
 				var a = '';
@@ -90,22 +95,22 @@ $(document).on('click', '.link-delete-article', deleteAnswer);
 				a += '<li><a id="cancelUpdateForm" style="cursor:pointer">취소</a></li></ul>'
 				a += '</div>';
 				$('.qna-comment-slipp-articles .article'+answerId).children('.article-main').html(a);
-				check = 1;
+				$('#editContent').focus();
+				isUpdateFormOpen = true;
 			}
 		});
+	}
 
 		$(document).on('click', '#cancelUpdateForm', cancelUpdateAnswer);
 
 		//댓글 업데이트 취소 시
 		function cancelUpdateAnswer() {
-			if(check==0) {
+			if(!isUpdateFormOpen) {
 				return false;
 			}
-			
 			var content = $(".qna-comment-slipp-articles .input-group .answerUpdateForm").val();
 			var questionId = tempAnswerData.question.id;
 			var answerId = tempAnswerData.id;
-			console.log("questionId : "+questionId+" answerId : "+answerId);
 		
 					var original = '';
 					original += '<div class="article-main" id="answer-main">'
@@ -114,11 +119,11 @@ $(document).on('click', '.link-delete-article', deleteAnswer);
 					original += '<ul class="article-util-list">'
 					original += '<li><a class="link-answer-modify-article" href="/api/questions/'+questionId+'/answers/'+answerId+'/updateForm">수정</a></li>'
 					original +=	'<li><a class="link-delete-article" href="/api/questions/'+questionId+'/answers/'+answerId+'">삭제</a></li>'
-					original += '<li><a class="link-reanswer-article" id="reanswer-article{4}" href="/api/questions/{3}/answers/{4}/reanswers">답글</a>';
+					original += '<li><a class="link-reanswer-article" id="reanswer-article{4}" href="/api/questions/'+questionId+'/answers/'+answerId+'/reanswers">답글</a>';
                     original += '</li>'
 					original += '</ul></div>'
 					$('.qna-comment-slipp-articles .article'+answerId+' .input-group').html(original);
-			check=0;	
+					isUpdateFormOpen = false;	
 		}
 
 		$(document).on('click','#updateAction', updateAnswerAction);
@@ -127,7 +132,7 @@ $(document).on('click', '.link-delete-article', deleteAnswer);
 		function updateAnswerAction(e) {
 			e.preventDefault();
 			var updatActionBtn = $(this);
-			url = updatActionBtn.attr("href");
+			var url = updatActionBtn.attr("href");
 
 			var contents = $('#editContent').val();
 			$.ajax({
@@ -141,13 +146,15 @@ $(document).on('click', '.link-delete-article', deleteAnswer);
 				success: function(data, status) {
 					$('#answer-create-time').text(data.formattedCreateDate);
 					var updatedAnswerUrl = '';
+					var questionId = data.question.id;
+					var answerId = data.id;
 					updatedAnswerUrl += '<div class="article-main" id="answer-main">'
 					updatedAnswerUrl +=	'<div class="article-doc comment-doc">'+data.contents+'</div>'
 					updatedAnswerUrl += '<div class="article-util">'
 					updatedAnswerUrl += '<ul class="article-util-list">'
-					updatedAnswerUrl += '<li><a class="link-answer-modify-article" href="/api/questions/'+data.question.id+'/answers/'+data.id+'/updateForm">수정</a></li>'
-					updatedAnswerUrl +=	'<li><a class="link-delete-article" href="/api/questions/'+data.question.id+'/answers/'+data.id+'">삭제</a></li>'
-					updatedAnswerUrl += '<li><a class="link-reanswer-article" id="reanswer-article{4}" href="/api/questions/{3}/answers/{4}/reanswers">답글</a>';
+					updatedAnswerUrl += '<li><a class="link-answer-modify-article" href="/api/questions/'+questionId+'/answers/'+answerId+'/updateForm">수정</a></li>'
+					updatedAnswerUrl +=	'<li><a class="link-delete-article" href="/api/questions/'+questionId+'/answers/'+answerId+'">삭제</a></li>'
+					updatedAnswerUrl += '<li><a class="link-reanswer-article" id="reanswer-article{4}" href="/api/questions/'+questionId+'/answers/'+answerId+'/reanswers">답글</a>';
                     updatedAnswerUrl += '</li>'
 					updatedAnswerUrl += '</ul></div>'
 
@@ -156,10 +163,8 @@ $(document).on('click', '.link-delete-article', deleteAnswer);
 			}); 
 		}
 
-	}
-
-
 	$(document).on('click', '.link-reanswer-article', reanswerForm);
+
 
 	function reanswerForm(e) {
 		e.preventDefault();
@@ -181,20 +186,53 @@ $(document).on('click', '.link-delete-article', deleteAnswer);
 	}
 
 	function openAnswerForm(data) {
+		if(isReanswerFormOpen) {
+			cancelReAnswer();
+		}
+		if(isUpdateFormOpen) {
+			cancelUpdateAnswer();
+		}
 		var answerForm = '';
-		answerForm += '<form class="reanswer-write" method="post" action="/api/questions/'+data.question.id+'/answers/'+data.id+'">';
+		answerForm += '<form class="reanswer-write" method="post" action="/api/questions/'+data.question.id+'/answers/">';
 		answerForm += '<div class="form-group" style="padding: 14px;">';
-		answerForm += '<textarea class="form-control" placeholder="내용을 입력하세요." name="contents"></textarea>"';
+		answerForm += '<input type="hidden" name="id" value="'+data.id+'" />'
+		answerForm += '<textarea class="form-control" placeholder="내용을 입력하세요." id="answer-contents" name="contents"></textarea>';
 		answerForm += '</div>';
-		answerForm += '<div><input type="submit" class="btn btn-success pull-right" value="답변하기">';
+		answerForm += '<div><input type="submit" class="btn btn-success pull-right" id="reAnswerBtn" value="댓글등록">';
 		answerForm += '<a style="cursor:pointer;" onClick="cancelReAnswer()">취소</a></div>'
 		answerForm += '<div class="clearfix" />';	
 		answerForm += '</form>';
+		isReanswerFormOpen = true;
 		$('.article'+data.id).after(answerForm);
+		$('#answer-contents').focus();
 	}
 
 	function cancelReAnswer() {
 		$('.reanswer-write').remove();
+		isReanswerFormOpen = false;
+		
+	}
+
+	$(document).on('click', "#reAnswerBtn", addReAnswer);
+
+	function addReAnswer(e) {
+		e.preventDefault();
+		var url = $('.reanswer-write').attr('action');
+		var queryString = $('.reanswer-write').serialize();
+		$.ajax({
+			type: 'post',
+			data: queryString,
+			dataType: 'json',
+			url: url,
+			success: function(data) {
+				var reanswerTemplate = $('#answerTemplate').html();
+				var template = reanswerTemplate.format(data.writer.userId, data.formattedCreateDate, data.contents,
+					data.question.id, data.id);
+				$('.article'+data.reparentNo).after(template);
+			}, error: function() {
+				alert('error');
+			}
+		});
 	}
 
 	

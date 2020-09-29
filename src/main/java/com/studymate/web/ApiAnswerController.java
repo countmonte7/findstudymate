@@ -47,7 +47,7 @@ public class ApiAnswerController {
 	
 
 	@PostMapping("")
-	public Answer createAnswer(@PathVariable Long questionId, String contents, HttpSession session) {
+	public Answer createAnswer(@PathVariable Long questionId, Long id, String contents, HttpSession session) {
 		if (!HttpSessionUtils.isLoginUser(session))
 			return null;
 		if (contents == null || contents == "")
@@ -55,8 +55,20 @@ public class ApiAnswerController {
 		User writer = HttpSessionUtils.getUserFromSession(session);
 
 		Question question = questionRepository.findById(questionId).orElse(null);
-
+		
 		Answer answer = new Answer(question, writer, contents);
+		
+		if(id!=null) {
+			Answer parentAnswer = answerRepository.findById(id).orElse(null);
+			answer.addAnswerDepth(parentAnswer.getRedepthNo());
+			Long parentAnswerReorderNo = parentAnswer.getReorderNo();
+			question.addReOrderNoForAll(parentAnswerReorderNo);
+			answer.addAnswerOrder(parentAnswerReorderNo);
+			answer.addAnswerParentNo(parentAnswer.getId());
+			question.addAnswerCount();
+			return answerRepository.save(answer);
+		}
+		
 		question.addAnswerCount();
 		return answerRepository.save(answer);	
 	}
@@ -108,6 +120,14 @@ public class ApiAnswerController {
 		if(!answer.isSameWriter(loginUser)) return null;
 		answer.update(contents);
 		return answerRepository.save(answer);
+	}
+	
+	@GetMapping("/{id}/reanswers")
+	public Answer reAnswerForm(@PathVariable Long questionId, @PathVariable Long id, HttpSession session) {
+		if(!HttpSessionUtils.isLoginUser(session)) {
+			return null;
+		}
+		return answerRepository.findById(id).orElse(null);
 	}
 	
 }

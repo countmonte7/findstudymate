@@ -81,4 +81,13 @@ public class Question {
 		this.countOfAnswer -= 1;
 	}
 	
+	public void addReOrderNoForAll(Long parentAnswerReorderNo) {
+		
+		for(int i=0;i<answers.size();i++) {
+			Long reorderNo = this.answers.get(i).getReorderNo();
+			if(reorderNo > parentAnswerReorderNo) reorderNo += 1;
+		}
+	}
+	
+	
 }

@@ -56,7 +56,7 @@
 							</p>
 							<div class="qna-comment-slipp-articles">
 								{{#answers}}
-								<div class="article{{id}}" id="answer-group">
+								<div class="article{{id}}" id="answer-group-{4}">
 									<div class="article-header">
 										<div class="article-header-thumb">
 											<img src="https://graph.facebook.com/v2.3/1324855987/picture"
@@ -76,9 +76,13 @@
 											<ul class="article-util-list">
 												<li><a class="link-answer-modify-article"
 													href="/api/questions/{{question.id}}/answers/{{id}}/updateForm">수정</a>
-												<li>
+												</li>
 												<li><a class="link-delete-article"
-													href="/api/questions/{{question.id}}/answers/{{id}}">삭제</a></li>
+													href="/api/questions/{{question.id}}/answers/{{id}}">삭제</a>
+												</li>
+												<li><a class="link-reanswer-article" id="reanswer-article{{id}}"
+													href="/api/questions/{{question.id}}/answers/{{id}}/reanswers">답글</a>
+												</li>
 											</ul>
 										</div>
 									</div>

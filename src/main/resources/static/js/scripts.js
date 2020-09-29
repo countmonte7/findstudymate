@@ -15,7 +15,7 @@ function addAnswer(e) {
 			var answerTemplate = $("#answerTemplate").html();
 			var template = answerTemplate.format(data.writer.userId, data.formattedCreateDate, data.contents,
 				data.question.id, data.id);
-			$(".qna-comment-slipp-articles").prepend(template);
+			$(".qna-comment-slipp-articles").append(template);
 			$(".comment-count").text(data.question.countOfAnswer);
 			$(".answer-write textarea").val("");
 		}
@@ -113,7 +113,9 @@ $(document).on('click', '.link-delete-article', deleteAnswer);
 					original += '<div class="article-util">'
 					original += '<ul class="article-util-list">'
 					original += '<li><a class="link-answer-modify-article" href="/api/questions/'+questionId+'/answers/'+answerId+'/updateForm">수정</a></li>'
-					original +=	'<li><a class="link-delete-article" href="/api/questions/'+questionId+'/answers/'+answerId+'">삭제</a></li>"'
+					original +=	'<li><a class="link-delete-article" href="/api/questions/'+questionId+'/answers/'+answerId+'">삭제</a></li>'
+					original += '<li><a class="link-reanswer-article" id="reanswer-article{4}" href="/api/questions/{3}/answers/{4}/reanswers">답글</a>';
+                    original += '</li>'
 					original += '</ul></div>'
 					$('.qna-comment-slipp-articles .article'+answerId+' .input-group').html(original);
 			check=0;	
@@ -145,6 +147,8 @@ $(document).on('click', '.link-delete-article', deleteAnswer);
 					updatedAnswerUrl += '<ul class="article-util-list">'
 					updatedAnswerUrl += '<li><a class="link-answer-modify-article" href="/api/questions/'+data.question.id+'/answers/'+data.id+'/updateForm">수정</a></li>'
 					updatedAnswerUrl +=	'<li><a class="link-delete-article" href="/api/questions/'+data.question.id+'/answers/'+data.id+'">삭제</a></li>'
+					updatedAnswerUrl += '<li><a class="link-reanswer-article" id="reanswer-article{4}" href="/api/questions/{3}/answers/{4}/reanswers">답글</a>';
+                    updatedAnswerUrl += '</li>'
 					updatedAnswerUrl += '</ul></div>'
 
 					$('.qna-comment-slipp-articles .article'+data.id+' .input-group').html(updatedAnswerUrl);
@@ -152,6 +156,45 @@ $(document).on('click', '.link-delete-article', deleteAnswer);
 			}); 
 		}
 
+	}
+
+
+	$(document).on('click', '.link-reanswer-article', reanswerForm);
+
+	function reanswerForm(e) {
+		e.preventDefault();
+		var reanswerBtn = $(this);
+		var url = reanswerBtn.attr("href");
+		console.log(url);
+		$.ajax({
+			type: 'get',
+			dataType: 'json',
+			url: url,
+			success: function(data) {
+				openAnswerForm(data);
+			},
+			error: function(status) {
+				alert(status);
+			}
+		});
+
+	}
+
+	function openAnswerForm(data) {
+		var answerForm = '';
+		answerForm += '<form class="reanswer-write" method="post" action="/api/questions/'+data.question.id+'/answers/'+data.id+'">';
+		answerForm += '<div class="form-group" style="padding: 14px;">';
+		answerForm += '<textarea class="form-control" placeholder="내용을 입력하세요." name="contents"></textarea>"';
+		answerForm += '</div>';
+		answerForm += '<div><input type="submit" class="btn btn-success pull-right" value="답변하기">';
+		answerForm += '<a style="cursor:pointer;" onClick="cancelReAnswer()">취소</a></div>'
+		answerForm += '<div class="clearfix" />';	
+		answerForm += '</form>';
+		$('.article'+data.id).after(answerForm);
+	}
+
+	function cancelReAnswer() {
+		$('.reanswer-write').remove();
 	}
 
 	

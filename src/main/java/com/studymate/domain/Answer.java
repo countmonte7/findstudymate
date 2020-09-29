@@ -48,6 +48,15 @@ public class Answer {
 	@JsonProperty
 	private LocalDateTime createDate;
 	
+	@JsonProperty
+	private Long reparentNo;
+	
+	@JsonProperty
+	private Long redepthNo = 0L;
+	
+	@JsonProperty
+	private Long reorderNo = 0L;
+	
 	
 	public Answer(Question question, User writer, String contents) {
 		this.question = question;
@@ -71,4 +80,17 @@ public class Answer {
 		this.createDate = LocalDateTime.now();
 		this.contents = contents;
 	}
+	
+	public void addAnswerDepth(Long parentAnswerDepth) {
+		this.redepthNo = parentAnswerDepth + 1;
+	}
+	
+	public void addAnswerOrder(Long parentAnswerOrder) {
+		this.reorderNo = parentAnswerOrder + 1;
+	}
+	
+	public void addAnswerParentNo(Long parentAnswerNo) {
+		this.reparentNo = parentAnswerNo;
+	}
+	
 }

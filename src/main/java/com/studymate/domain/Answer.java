@@ -57,6 +57,9 @@ public class Answer {
 	@JsonProperty
 	private Long reorderNo = 0L;
 	
+	@JsonProperty
+	private Long hitCount = 0L;
+	
 	
 	public Answer(Question question, User writer, String contents) {
 		this.question = question;
@@ -85,12 +88,16 @@ public class Answer {
 		this.redepthNo = parentAnswerDepth + 1;
 	}
 	
-	public void addAnswerOrder(Long parentAnswerOrder) {
-		this.reorderNo = parentAnswerOrder + 1;
+	public void addAnswerOrder(Long answerOrder) {
+		this.reorderNo = answerOrder + 1;
 	}
 	
 	public void addAnswerParentNo(Long parentAnswerNo) {
 		this.reparentNo = parentAnswerNo;
+	}
+	
+	public void addHitCount(Long hitCount) {
+		this.hitCount = hitCount + 1;
 	}
 	
 }

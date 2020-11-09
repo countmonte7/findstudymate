@@ -47,7 +47,7 @@ public class Question {
 	private LocalDateTime createDate;
 	
 	@OneToMany(mappedBy="question")
-	@OrderBy("id DESC")
+	@OrderBy("reorder_no ASC")
 	private List<Answer> answers;
 	
 	public Question(User writer, String title, String contents) {
@@ -85,8 +85,15 @@ public class Question {
 		
 		for(int i=0;i<answers.size();i++) {
 			Long reorderNo = this.answers.get(i).getReorderNo();
-			if(reorderNo > parentAnswerReorderNo) reorderNo += 1;
+			if(reorderNo > parentAnswerReorderNo) {
+				Long newReOderNo = reorderNo + 1;
+			}
+			
 		}
+	}
+	
+	public Long addReOrderNo() {
+		return Long.valueOf(this.answers.size());
 	}
 	
 	

@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.studymate.domain.Answer;
+import com.studymate.domain.AnswerRepository;
 import com.studymate.domain.Question;
 import com.studymate.domain.QuestionRepository;
 import com.studymate.domain.Result;
@@ -24,6 +26,8 @@ public class QuestionController {
 
 	@Autowired
 	private QuestionRepository quesitonRepository;
+	
+	private AnswerRepository answerRepository;
 
 	@GetMapping("/form")
 	public String form(HttpSession session) {
@@ -44,15 +48,18 @@ public class QuestionController {
 		return "redirect:/";
 	}
 
+	//게시판 글 상세 조회
 	@GetMapping("/{id}")
-	public String quesitonDetail(@PathVariable Long id, Model model) {
+	public String quesitonDetail(@PathVariable Long id, Model model, HttpSession session) {
 		Question question = quesitonRepository.findById(id).orElse(null);
 		if (question == null)
 			return "redirect:/";
 		model.addAttribute("question", question);
+		
 		return "/qna/show";
 	}
 
+	//게시판 수정 폼 불러오기
 	@GetMapping("/{id}/form")
 	public String questionUpdateForm(@PathVariable Long id, Model model, HttpSession session,
 			RedirectAttributes rdAttributes) {

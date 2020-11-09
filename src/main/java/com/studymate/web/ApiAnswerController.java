@@ -23,6 +23,8 @@ import com.studymate.domain.QuestionRepository;
 import com.studymate.domain.Result;
 import com.studymate.domain.User;
 
+import jdk.internal.org.jline.utils.Log;
+
 
 @RestController
 @RequestMapping("/api/questions/{questionId}/answers")
@@ -70,7 +72,8 @@ public class ApiAnswerController {
 			question.addAnswerCount();
 			return answerRepository.save(answer);
 		}
-		
+		Long reorderNo = question.addReOrderNo();
+		answer.addAnswerOrder(reorderNo);
 		question.addAnswerCount();
 		return answerRepository.save(answer);	
 	}
@@ -132,6 +135,13 @@ public class ApiAnswerController {
 		return answerRepository.findById(id).orElse(null);
 	}
 	
+	@GetMapping("/{id}/like")
+	public Answer hitLike(@PathVariable Long id) {
+		Answer answer = answerRepository.findById(id).orElse(null);
+		answer.addHitCount(answer.getHitCount());
+		answerRepository.save(answer);
+		return answer;
+	}
 	
 	
 }

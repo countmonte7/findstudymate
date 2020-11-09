@@ -229,8 +229,23 @@ $(document).on('click', '.link-delete-article', deleteAnswer);
 				var template = reanswerTemplate.format(data.writer.userId, data.formattedCreateDate, data.contents,
 					data.question.id, data.id);
 				$('.article'+data.reparentNo).after(template);
+				cancelReAnswer();
 			}, error: function() {
 				alert('error');
+			}
+		});
+	}
+	
+	$(document).on('click', "#likeBtn", addLikeCount);
+	
+	function addLikeCount(e) {
+		e.preventDefault();
+		var url = $(this).attr('href');
+		$.ajax({
+			type : 'get',
+			url : url,
+			success : function(data) {
+				$('#hitCount'+data.id).text(data.hitCount).load("/questions/data.question.id");
 			}
 		});
 	}

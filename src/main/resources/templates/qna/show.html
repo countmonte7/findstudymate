@@ -69,20 +69,26 @@
 										</div>
 									</div>
 									<div class="article-main" id="answer-main">
-										<div class="article-doc comment-doc">
-											<p>{{contents}}</p>
+										<div class="article-doc comment-doc" >
+											<p style="display:inline-block;">{{contents}}</p>
+											<a style="display:inline-block;" href="/api/questions/{{question.id}}/answers/{{id}}/like" id="likeBtn">좋아요</a>
+											<p style="display:inline-block;" id="hitCount{{id}}">{{hitCount}}</p>
 										</div>
 										<div class="article-util">
 											<ul class="article-util-list">
+												
 												<li><a class="link-answer-modify-article"
 													href="/api/questions/{{question.id}}/answers/{{id}}/updateForm">수정</a>
 												</li>
 												<li><a class="link-delete-article"
 													href="/api/questions/{{question.id}}/answers/{{id}}">삭제</a>
 												</li>
+												
+												
 												<li><a class="link-reanswer-article" id="reanswer-article{{id}}"
 													href="/api/questions/{{question.id}}/answers/{{id}}/reanswers">답글</a>
 												</li>
+												
 											</ul>
 										</div>
 									</div>

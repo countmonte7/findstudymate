@@ -201,3 +201,20 @@ h3,h4,h5 {
     padding-right: 2.5em;
 }
 
+#searchBox {
+	height: 40px;
+}
+
+#searchStudyBtn {
+    height: 40px;
+}
+
+#innerContainer {
+    width: 100%;
+    text-align: center;
+}
+
+.lbl-fidnStudy {
+    font-size: 20px;
+    display: inline;
+}

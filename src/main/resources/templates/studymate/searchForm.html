@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {{> include/header}}
+</head>
+<body>
+    {{> include/navigation }}
+    <div class="container" id="main">
+    	<div id="innerContainer">
+	        <form id="searchStudyForm" action="/api/studymateSearch/find">
+	            <p class="lbl-fidnStudy">스터디 찾기 :</p> 
+	            <input type="text" id="searchBox" size="60" name="searchBox">
+	            <input type="submit" id="searchStudyBtn" value="찾기">
+	        </form>    
+        </div>
+    </div>
+	
+    {{> include/footer }}
+</body>
+</html>

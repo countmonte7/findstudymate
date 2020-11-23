@@ -30,7 +30,7 @@ public class Question {
 	private Long id;
 
 	@ManyToOne
-	@JoinColumn(foreignKey = @ForeignKey(name="fk_question_writer"))
+	@JoinColumn(foreignKey = @ForeignKey(name = "fk_question_writer"))
 	private User writer;
 
 	@NonNull
@@ -39,17 +39,17 @@ public class Question {
 	@NonNull
 	@JsonProperty
 	private String contents;
-	
+
 	@JsonProperty
 	private Integer countOfAnswer = 0;
-	
+
 	@NonNull
 	private LocalDateTime createDate;
-	
-	@OneToMany(mappedBy="question")
+
+	@OneToMany(mappedBy = "question")
 	@OrderBy("reorder_no ASC")
 	private List<Answer> answers;
-	
+
 	public Question(User writer, String title, String contents) {
 		super();
 		this.writer = writer;
@@ -57,10 +57,11 @@ public class Question {
 		this.contents = contents;
 		this.createDate = LocalDateTime.now();
 	}
-	
+
 	public String getFormattedCreateDate() {
-		if(createDate == null) return "";
-		
+		if (createDate == null)
+			return "";
+
 		return createDate.format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm"));
 	}
 
@@ -76,25 +77,24 @@ public class Question {
 	public void addAnswerCount() {
 		this.countOfAnswer += 1;
 	}
-	
+
 	public void deleteAnswerCount() {
 		this.countOfAnswer -= 1;
 	}
-	
+
 	public void addReOrderNoForAll(Long parentAnswerReorderNo) {
-		
-		for(int i=0;i<answers.size();i++) {
+
+		for (int i = 0; i < answers.size(); i++) {
 			Long reorderNo = this.answers.get(i).getReorderNo();
-			if(reorderNo > parentAnswerReorderNo) {
+			if (reorderNo > parentAnswerReorderNo) {
 				Long newReOderNo = reorderNo + 1;
 			}
-			
+
 		}
 	}
-	
+
 	public Long addReOrderNo() {
 		return Long.valueOf(this.answers.size());
 	}
-	
-	
+
 }

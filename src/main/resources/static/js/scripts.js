@@ -4,6 +4,7 @@ var isReanswerFormOpen = false;
 
 $(document).on('click', '.answer-write input[type=submit]', addAnswer);
 
+//댓글 작성 기능
 function addAnswer(e) {
 	e.preventDefault();
 	var queryString = $(".answer-write").serialize();
@@ -20,7 +21,7 @@ function addAnswer(e) {
 			var template = answerTemplate.format(data.writer.userId, data.formattedCreateDate, data.contents,
 				data.question.id, data.id);
 			$(".qna-comment-slipp-articles").append(template);
-			$(".comment-count").text(data.question.countOfAnswer);
+			$(".comment-count").text(data.question.countOfAnswer).load("/questions/data.question.id");
 			$(".answer-write textarea").val("");
 		}
 	});
@@ -163,6 +164,7 @@ $(document).on('click', '.link-delete-article', deleteAnswer);
 			}); 
 		}
 
+	//대댓글 폼 불러오기
 	$(document).on('click', '.link-reanswer-article', reanswerForm);
 
 
@@ -170,7 +172,6 @@ $(document).on('click', '.link-delete-article', deleteAnswer);
 		e.preventDefault();
 		var reanswerBtn = $(this);
 		var url = reanswerBtn.attr("href");
-		console.log(url);
 		$.ajax({
 			type: 'get',
 			dataType: 'json',
@@ -236,16 +237,26 @@ $(document).on('click', '.link-delete-article', deleteAnswer);
 		});
 	}
 	
+	
 	$(document).on('click', "#likeBtn", addLikeCount);
 	
+	//좋아요 버튼 처리
 	function addLikeCount(e) {
 		e.preventDefault();
 		var url = $(this).attr('href');
+		
 		$.ajax({
 			type : 'get',
 			url : url,
 			success : function(data) {
-				$('#hitCount'+data.id).text(data.hitCount).load("/questions/data.question.id");
+				if(data!=null) {
+					$('#hitCount'+data.id).html(data.hitCount).load("/questions/data.question.id");
+					// $('#hitCount'+data.id).text(data.hitCount).load("/questions/data.question.id");
+				}else {
+					
+					alert('좋아요는 한 번만 누르세요.');
+				}
+				
 			}
 		});
 	}

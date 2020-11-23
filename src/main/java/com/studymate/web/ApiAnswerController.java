@@ -18,12 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.studymate.domain.Answer;
 import com.studymate.domain.AnswerRepository;
+import com.studymate.domain.Likey;
+import com.studymate.domain.LikeyRepository;
 import com.studymate.domain.Question;
 import com.studymate.domain.QuestionRepository;
 import com.studymate.domain.Result;
 import com.studymate.domain.User;
-
-import jdk.internal.org.jline.utils.Log;
 
 
 @RestController
@@ -39,6 +39,8 @@ public class ApiAnswerController {
 	@Autowired
 	private QuestionRepository questionRepository;
 	
+	@Autowired
+	private LikeyRepository likeyRepository;
 	
 	@GetMapping("/{id}")
 	public Answer showAnswer(@PathVariable Long id) {
@@ -136,10 +138,22 @@ public class ApiAnswerController {
 	}
 	
 	@GetMapping("/{id}/like")
-	public Answer hitLike(@PathVariable Long id) {
+	public Answer hitLike(@PathVariable Long id, HttpSession session) {
 		Answer answer = answerRepository.findById(id).orElse(null);
-		answer.addHitCount(answer.getHitCount());
-		answerRepository.save(answer);
+		User user = HttpSessionUtils.getUserFromSession(session);
+		if(HttpSessionUtils.isLoginUser(session)) {
+			List<Likey> likes = likeyRepository.findByUser_Id(user.getId());
+			for (Likey like : likes) {
+				if(like.isSameAnswer(answer)) {
+					return null;
+				}
+			}
+			Likey likey = new Likey(answer, user);
+			likeyRepository.save(likey);
+			answer.addHitCount(answer);
+			answerRepository.save(answer);
+		}
+		
 		return answer;
 	}
 	

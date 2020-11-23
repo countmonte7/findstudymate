@@ -2,6 +2,7 @@ package com.studymate.domain;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
@@ -11,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -40,6 +42,10 @@ public class Answer {
 	@JoinColumn(foreignKey = @ForeignKey(name = "fk_answer_to_question"))
 	@JsonProperty
 	private Question question;
+	
+	@OneToMany(mappedBy ="answer")
+	@JsonProperty
+	private List<Likey> likes;
 	
 	@Lob
 	@JsonProperty
@@ -96,8 +102,8 @@ public class Answer {
 		this.reparentNo = parentAnswerNo;
 	}
 	
-	public void addHitCount(Long hitCount) {
-		this.hitCount = hitCount + 1;
+	public void addHitCount(Answer answer) {
+		this.hitCount = answer.getHitCount() + 1;
 	}
 	
 }
